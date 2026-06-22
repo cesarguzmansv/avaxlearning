@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AvaxLearning · Reiniciando el Motor</title>
+    <!-- Fuentes y estilos base -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <style>
+        /* Reset y configuración global */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1a1a2e;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+        }
+
+        /* Fondo blanco */
+        #gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: #ffffff;
+        }
+
+        /* NUEVO: Fondo de red neuronal / sistema tecnológico */
+        #neural-network {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Partículas decorativas originales (opacidad reducida) */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.10;
+            pointer-events: none;
+        }
+
+        /* Contenedor principal */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        /* Tamaño de fuente uniforme para toda la página */
+        .text-size {
+            font-size: 1.15rem;
+            line-height: 1.9;
+        }
+
+        /* Color de texto uniforme para toda la página */
+        .text-color {
+            color: #1a1a2e;
+        }
+
+        /* Badge de "Upgrade" con animación de pulso */
+        .badge {
+            display: inline-block;
+            background: rgba(136, 14, 212, 0.08);
+            border: 1px solid rgba(136, 14, 212, 0.12);
+            color: #880ED4;
+            padding: 0.5rem 1.8rem;
+            border-radius: 100px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            backdrop-filter: blur(4px);
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            animation: pulse-badge 2s ease-in-out infinite;
+        }
+
+        .badge i {
+            font-style: normal;
+            display: inline-block;
+            animation: pulse-badge-text 2s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes pulse-badge-text {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Título con animación de entrada */
+        h1 {
+            font-size: clamp(3.5rem, 12vw, 6.5rem);
+            font-weight: 900;
+            line-height: 1;
+            color: #880ED4;
+            margin-bottom: 0.5rem;
+            letter-spacing: -2px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subtitle {
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .highlight {
+            color: #FF9900;
+            background: rgba(255, 153, 0, 0.08);
+            padding: 0.1rem 0.8rem;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: 800;
+            animation: pulse-highlight 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-highlight {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        /* Efecto de escritura (typing) */
+        .typing-container {
+            display: inline-block;
+            margin: 1.5rem auto 0.5rem auto;
+        }
+
+        .typing-text {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid #880ED4;
+            animation: typing 3s steps(40, end) infinite, blink-caret 0.75s step-end infinite;
+            font-weight: 700;
+            color: #6B0FA0;
+        }
+
+        @keyframes typing {
+            0% { width: 0; }
+            30% { width: 100%; }
+            70% { width: 100%; }
+            100% { width: 0; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #880ED4; }
+        }
+
+        .description {
+            max-width: 700px;
+            margin: 1.5rem auto 2.5rem auto;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .description strong {
+            color: #6B0FA0;
+            font-weight: 700;
+        }
+
+        /* Grid de características */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0 3rem 0;
+        }
+
+        .feature-card {
+            background: #f8f6fa;
+            border: 1px solid #eeeaf0;
+            border-radius: 20px;
+            padding: 1.8rem 1.2rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+            animation: fadeInUp 0.8s ease-out both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Efecto de brillo en las tarjetas */
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(136, 14, 212, 0.03), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: #f5f0f8;
+            border-color: rgba(136, 14, 212, 0.2);
+            box-shadow: 0 16px 48px rgba(136, 14, 212, 0.08);
+        }
+
+        .feature-card:hover .feature-icon {
+            animation: float-icon 0.6s ease-in-out;
+        }
+
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .feature-icon {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card h3 {
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 0.3rem;
+            font-size: 1rem;
+        }
+
+        .feature-card p {
+            color: #1a1a2e;
+            margin: 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        /* Sección de El Salvador con animación */
+        .elsalvador-section {
+            background: #f8f6fa;
+            border: 1px solid #eeeaf0;
+            border-radius: 20px;
+            padding: 2rem 2rem;
+            margin: 2rem auto 2.5rem auto;
+            max-width: 520px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+            animation: fadeInUp 1s ease-out 0.6s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .elsalvador-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(136, 14, 212, 0.03), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .elsalvador-section:hover::before {
+            opacity: 1;
+        }
+
+        .elsalvador-section:hover {
+            transform: translateY(-4px);
+            border-color: rgba(136, 14, 212, 0.2);
+            background: #f5f0f8;
+            box-shadow: 0 12px 40px rgba(136, 14, 212, 0.06);
+        }
+
+        .flag-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .flag-wrapper .flag-img {
+            width: 64px;
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            flex-shrink: 0;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .elsalvador-section:hover .flag-img {
+            transform: scale(1.08) rotate(-2deg);
+        }
+
+        .flag-text {
+            font-weight: 800;
+            color: #1a1a2e;
+            letter-spacing: 0.5px;
+        }
+
+        .flag-text .purple {
+            color: #880ED4;
+        }
+        .flag-text .orange {
+            color: #FF9900;
+        }
+
+        .elsalvador-section p {
+            color: #1a1a2e;
+            margin: 0.5rem 0 0 0;
+        }
+
+        /* Barra de progreso animada */
+        .progress-container {
+            max-width: 500px;
+            margin: 2rem auto 1.5rem auto;
+            background: #eeeaf0;
+            border-radius: 100px;
+            height: 8px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            animation: fadeInUp 1s ease-out 0.8s both;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #880ED4, #FF9900);
+            border-radius: 100px;
+            width: 0%;
+            animation: progress-animation 4s ease-in-out infinite;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes progress-animation {
+            0% { width: 0%; }
+            50% { width: 78%; }
+            70% { width: 78%; }
+            100% { width: 0%; }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-label {
+            font-size: 0.85rem;
+            color: #880ED4;
+            font-weight: 600;
+            margin-top: 0.3rem;
+            animation: pulse-progress 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-progress {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        /* Email de contacto como texto */
+        .contact-email {
+            margin-top: 1.5rem;
+            animation: fadeInUp 1s ease-out 1s both;
+        }
+
+        .contact-email a {
+            color: #880ED4;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .contact-email a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #FF9900;
+            transition: width 0.3s ease;
+        }
+
+        .contact-email a:hover::after {
+            width: 100%;
+        }
+
+        .contact-email a:hover {
+            color: #FF9900;
+        }
+
+        .contact-email .label {
+            font-weight: 600;
+        }
+
+        /* Mensaje adicional */
+        .visit-message {
+            margin-top: 0.5rem;
+            animation: fadeInUp 1s ease-out 1.2s both;
+        }
+
+        .visit-message span {
+            color: #6B0FA0;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer-note {
+            margin-top: 4rem;
+            color: #1a1a2e;
+            border-top: 1px solid #eeeaf0;
+            padding-top: 2rem;
+            letter-spacing: 0.5px;
+            animation: fadeInUp 1s ease-out 1.4s both;
+        }
+
+        .footer-note a {
+            color: #880ED4;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .footer-note a:hover {
+            color: #FF9900;
+            text-decoration: underline;
+        }
+
+        .footer-note .heart {
+            color: #FF9900;
+            display: inline-block;
+            animation: heart-beat 1.2s ease-in-out infinite;
+        }
+
+        @keyframes heart-beat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.2); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container { padding: 1rem; }
+            .feature-card { padding: 1.2rem; }
+            .elsalvador-section { padding: 1.5rem; margin: 1.5rem 0.5rem; }
+            .flag-wrapper .flag-img { width: 48px; }
+            .flag-text { font-size: 1rem; }
+            .text-size { font-size: 1rem; }
+            .feature-card h3 { font-size: 0.95rem; }
+            .feature-card p { font-size: 0.8rem; }
+            .typing-text { font-size: 0.9rem; white-space: normal; }
+            .typing-container { display: block; }
+            .typing-text { 
+                animation: none;
+                border-right: none;
+                white-space: normal;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fondo blanco -->
+    <div id="gradient-bg"></div>
+
+    <!-- NUEVO: Fondo de red neuronal / sistema tecnológico -->
+    <canvas id="neural-network"></canvas>
+
+    <!-- Partículas decorativas originales -->
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="container">
+
+        <!-- Badge con animación de pulso -->
+        <div class="badge">
+            <i>⚡ INFRAESTRUCTURA EN EVOLUCIÓN · MODO IMPARABLE</i>
+        </div>
+
+        <!-- Título principal -->
+        <h1>AvaxLearning</h1>
+        <p class="subtitle text-size text-color">
+            <span class="highlight">#Upgrade</span> · Potenciando el motor del conocimiento
+        </p>
+
+        <!-- Efecto de escritura (typing) -->
+        <div class="typing-container">
+            <span class="typing-text">Construyendo el futuro del aprendizaje</span>
+        </div>
+
+        <!-- Descripción -->
+        <p class="description text-size text-color">
+            Estamos migrando de <strong>Ghost CMS</strong> a una 
+            <strong>nueva generación tecnológica</strong> (WordPress + Moodle) 
+            para ofrecerte una experiencia de aprendizaje 
+            <strong>más rápida, inmersiva y personalizada</strong>. 
+            <br><br>
+            Pronto, seremos <strong>imparables</strong>. 🚀
+        </p>
+
+        <!-- Barra de progreso animada -->
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+        <p class="progress-label">⚡ Optimizando la nueva infraestructura</p>
+
+        <!-- Grid de los 4 pilares -->
+        <div class="features-grid">
+            <div class="feature-card text-color">
+                <span class="feature-icon">📘</span>
+                <h3>Resúmenes de Libros</h3>
+                <p>Claves de negocio en minutos</p>
+            </div>
+            <div class="feature-card text-color">
+                <span class="feature-icon">🎓</span>
+                <h3>Cursos Interactivos</h3>
+                <p>Storyline 360 · Experiencia inmersiva</p>
+            </div>
+            <div class="feature-card text-color">
+                <span class="feature-icon">🧠</span>
+                <h3>Artículos & Consejos</h3>
+                <p>Desarrollo personal y profesional</p>
+            </div>
+            <div class="feature-card text-color">
+                <span class="feature-icon">🎙️</span>
+                <h3>Audio & Video</h3>
+                <p>Aprende en cualquier formato</p>
+            </div>
+        </div>
+
+        <!-- Sección de El Salvador con bandera PNG -->
+        <div class="elsalvador-section text-size text-color">
+            <div class="flag-wrapper">
+                <img src="https://flagcdn.com/w160/sv.png" alt="Bandera de El Salvador" class="flag-img">
+                <span class="flag-text">
+                    Hecho con <span class="purple">❤️</span> desde 
+                    <span class="orange">El Salvador</span>
+                </span>
+            </div>
+            <p>
+                Orgullosamente salvadoreño, construyendo el futuro del aprendizaje 
+                desde el corazón de Centroamérica.
+            </p>
+        </div>
+
+        <!-- Contacto como texto -->
+        <p class="contact-email text-size text-color">
+            <span class="label">Contacto:</span> <a href="mailto:cesarguzman@avaxlearning.com">cesarguzman@avaxlearning.com</a>
+        </p>
+
+        <!-- Mensaje adicional -->
+        <p class="visit-message text-size text-color">
+            Estamos trabajando para ofrecerte la mejor experiencia. 
+            <span>Vuelve pronto.</span>
+        </p>
+
+        <div class="footer-note text-size text-color">
+            &copy; 2026 AvaxLearning · 
+            Construyendo el futuro del aprendizaje
+            <span class="heart"> ❤️</span>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // RED NEURONAL / SISTEMA TECNOLÓGICO - VELOCIDAD REDUCIDA
+        // ============================================================
+        (function initNeuralNetwork() {
+            const canvas = document.getElementById('neural-network');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let nodes = [];
+            let mouseX = 0;
+            let mouseY = 0;
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            // Seguir al mouse para efecto de interacción
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            // Configuración de la red neuronal
+            const NODE_COUNT = 35;
+            const CONNECTION_DIST = 180;
+            const PULSE_SPEED = 0.008;
+
+            class Node {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    // Velocidad MUY reducida para movimiento lento y elegante
+                    this.vx = (Math.random() - 0.5) * 0.04;
+                    this.vy = (Math.random() - 0.5) * 0.04;
+                    this.radius = 2 + Math.random() * 3;
+                    this.baseRadius = this.radius;
+                    // Cada nodo tiene un "rol": purple o naranja
+                    this.type = Math.random() > 0.6 ? 'orange' : 'purple';
+                    this.hue = this.type === 'purple' ? 
+                        270 + Math.random() * 20 : 
+                        30 + Math.random() * 20;
+                    this.opacity = 0.25 + Math.random() * 0.35;
+                    this.pulseOffset = Math.random() * Math.PI * 2;
+                    this.pulseSpeed = 0.003 + Math.random() * 0.008;
+                }
+
+                update(time) {
+                    // Movimiento suave y lento
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    // Rebote en bordes con suavidad
+                    if (this.x < 20) { this.x = 20; this.vx *= -1; }
+                    if (this.x > width - 20) { this.x = width - 20; this.vx *= -1; }
+                    if (this.y < 20) { this.y = 20; this.vy *= -1; }
+                    if (this.y > height - 20) { this.y = height - 20; this.vy *= -1; }
+
+                    // Efecto de respiración (muy sutil)
+                    this.radius = this.baseRadius + 
+                        Math.sin(time * this.pulseSpeed + this.pulseOffset) * 0.5;
+                    this.currentOpacity = this.opacity + 
+                        Math.sin(time * this.pulseSpeed * 0.7 + this.pulseOffset) * 0.08;
+                }
+
+                draw() {
+                    // Brillo exterior (más sutil)
+                    const glowRadius = this.radius * 3.5;
+                    const gradient = ctx.createRadialGradient(
+                        this.x, this.y, 0,
+                        this.x, this.y, glowRadius
+                    );
+                    gradient.addColorStop(0, `hsla(${this.hue}, 80%, 65%, ${this.currentOpacity * 0.4})`);
+                    gradient.addColorStop(0.4, `hsla(${this.hue}, 70%, 55%, ${this.currentOpacity * 0.15})`);
+                    gradient.addColorStop(1, `hsla(${this.hue}, 60%, 40%, 0)`);
+                    
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, glowRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+
+                    // Núcleo del nodo
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsla(${this.hue}, 85%, 70%, ${this.currentOpacity * 0.85})`;
+                    ctx.fill();
+
+                    // Punto central brillante (muy pequeño)
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 0.25, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsla(${this.hue}, 100%, 90%, ${this.currentOpacity * 0.7})`;
+                    ctx.fill();
+                }
+            }
+
+            // Crear nodos
+            for (let i = 0; i < NODE_COUNT; i++) {
+                nodes.push(new Node());
+            }
+
+            // Dibujar conexiones entre nodos cercanos
+            function drawConnections(time) {
+                for (let i = 0; i < nodes.length; i++) {
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const dx = nodes[i].x - nodes[j].x;
+                        const dy = nodes[i].y - nodes[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        // Distancia máxima de conexión
+                        const maxDist = CONNECTION_DIST + 
+                            Math.sin(time * 0.0003 + i + j) * 15;
+                        
+                        if (dist < maxDist) {
+                            // Intensidad basada en distancia
+                            const intensity = (1 - dist / maxDist);
+                            const alpha = intensity * 0.2;
+                            
+                            // Color de la conexión
+                            const hue1 = nodes[i].hue;
+                            const hue2 = nodes[j].hue;
+                            const avgHue = (hue1 + hue2) / 2;
+                            
+                            // Grosor de línea muy sutil
+                            const lineWidth = intensity * 0.8 + 0.2;
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(nodes[i].x, nodes[i].y);
+                            ctx.lineTo(nodes[j].x, nodes[j].y);
+                            ctx.strokeStyle = `hsla(${avgHue}, 60%, 55%, ${alpha})`;
+                            ctx.lineWidth = lineWidth;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            // Efecto de "señal" que viaja por la red (muy sutil)
+            function drawSignalPulse(time) {
+                const pulseCount = 1;
+                for (let p = 0; p < pulseCount; p++) {
+                    const progress = (time * 0.0002 + p / pulseCount) % 1;
+                    const nodeIndex = Math.floor(progress * nodes.length);
+                    const nextIndex = (nodeIndex + 1) % nodes.length;
+                    const localProgress = (progress * nodes.length) % 1;
+                    
+                    const n1 = nodes[nodeIndex];
+                    const n2 = nodes[nextIndex];
+                    
+                    if (n1 && n2) {
+                        const x = n1.x + (n2.x - n1.x) * localProgress;
+                        const y = n1.y + (n2.y - n1.y) * localProgress;
+                        
+                        // Pulso de luz viajero (más sutil)
+                        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 15);
+                        gradient.addColorStop(0, `hsla(280, 90%, 70%, 0.35)`);
+                        gradient.addColorStop(0.5, `hsla(280, 80%, 60%, 0.12)`);
+                        gradient.addColorStop(1, `hsla(280, 70%, 50%, 0)`);
+                        
+                        ctx.beginPath();
+                        ctx.arc(x, y, 15, 0, Math.PI * 2);
+                        ctx.fillStyle = gradient;
+                        ctx.fill();
+                    }
+                }
+            }
+
+            // Animación principal
+            let time = 0;
+            function animate() {
+                time += 1;
+                ctx.clearRect(0, 0, width, height);
+
+                // Actualizar nodos
+                nodes.forEach(node => node.update(time));
+
+                // Dibujar conexiones
+                drawConnections(time);
+
+                // Dibujar señales de pulso
+                drawSignalPulse(time);
+
+                // Dibujar nodos (encima de las conexiones)
+                nodes.forEach(node => node.draw());
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            // Recalcular en resize
+            window.addEventListener('resize', () => {
+                resize();
+                nodes.forEach(node => {
+                    node.x = Math.random() * width;
+                    node.y = Math.random() * height;
+                });
+            });
+        })();
+
+
+        // ============================================================
+        // PARTÍCULAS DECORATIVAS ORIGINALES
+        // ============================================================
+        (function initParticles() {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            const PARTICLE_COUNT = 40;
+            const MAX_DIST = 150;
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 0.15;
+                    this.vy = (Math.random() - 0.5) * 0.15;
+                    this.radius = Math.random() * 1.5 + 0.5;
+                    this.opacity = Math.random() * 0.12 + 0.03;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(136, 14, 212, ${this.opacity})`;
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                particles.push(new Particle());
+            }
+
+            function drawLines() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < MAX_DIST) {
+                            const alpha = (1 - dist / MAX_DIST) * 0.05;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(136, 14, 212, ${alpha})`;
+                            ctx.lineWidth = 0.3;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                drawLines();
+                requestAnimationFrame(animate);
+            }
+            animate();
+        })();
+
+        console.log('🚀 AvaxLearning · Modo Imparable activado');
+        console.log('🇸🇻 Hecho con orgullo desde El Salvador');
+        console.log('🧠 Red neuronal activada · Movimiento sutil y elegante');
+    </script>
+</body>
+</html>
